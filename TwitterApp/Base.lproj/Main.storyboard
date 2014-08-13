@@ -29,9 +29,14 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <items>
-                                    <barButtonItem title="Item" id="tNB-dp-DcG">
+                                    <barButtonItem title="Tweet" id="tNB-dp-DcG">
                                         <connections>
                                             <action selector="postButton:" destination="vXZ-lx-hvc" id="zRK-Fo-fsx"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem title="Update" id="iR8-pa-HIr">
+                                        <connections>
+                                            <action selector="updateButton:" destination="vXZ-lx-hvc" id="orE-rV-ywl"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>

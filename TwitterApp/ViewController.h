@@ -11,6 +11,7 @@
 @interface ViewController : UIViewController < UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 - (IBAction)postButton:(id)sender;
+- (IBAction)updateButton:(id)sender;
 
 
 @end

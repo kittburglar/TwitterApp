@@ -65,6 +65,8 @@
     
 }
 
+
+
 - (void)twitterTimeline {
     
     ACAccountStore * account = [[ACAccountStore alloc] init];
@@ -135,7 +137,7 @@
     };
     
     //  Set the initial body of the Tweet
-    [tweetSheet setInitialText:@"just setting up my twttr"];
+    [tweetSheet setInitialText:@""];
     
     //  Adds an image to the Tweet.  For demo purposes, assume we have an
     //  image named 'larry.png' that we wish to attach
@@ -153,4 +155,10 @@
         NSLog(@"Tweet sheet has been presented.");
     }];
 }
+
+- (IBAction)updateButton:(id)sender {
+    [self twitterTimeline];
+
+}
+
 @end

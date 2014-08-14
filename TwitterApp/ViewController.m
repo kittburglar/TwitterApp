@@ -11,14 +11,20 @@
 #import <Social/Social.h>
 @interface ViewController ()
 
-@property (strong, nonatomic) NSArray *array;
+@property (strong, nonatomic) NSMutableArray *array;
+@property (strong, nonatomic) ACAccountStore *account;
+@property (strong, nonatomic) ACAccountType *accountType;
 
 @end
 
 @implementation ViewController
 
+
+
 - (void)viewDidLoad
 {
+    _account = [[ACAccountStore alloc] init];
+    _accountType = [_account accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
     [super viewDidLoad];
     
     [self twitterTimeline];
@@ -34,6 +40,7 @@
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
+    NSLog(@"sequence = %i", [_array count]);
     return [_array count];
     
 }
@@ -52,10 +59,12 @@
         
     }
     
-    NSDictionary *tweet = _array[indexPath.row];
+    
+    
+    NSDictionary *tweet = _array[indexPath.row];;
     
     cell.textLabel.text = tweet[@"text"];
-    
+    //cell.textLabel.text = name;
     return cell;
 }
 
@@ -68,24 +77,25 @@
 
 
 - (void)twitterTimeline {
-    
-    ACAccountStore * account = [[ACAccountStore alloc] init];
-    ACAccountType *accountType = [account accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-    [account requestAccessToAccountsWithType:accountType options:nil completion:^(BOOL granted, NSError * error){
+    NSLog(@"Twitter timeline");
+    //ACAccountStore * account = [[ACAccountStore alloc] init];
+    //ACAccountType *accountType = [_account accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+    [_account requestAccessToAccountsWithType:_accountType options:nil completion:^(BOOL granted, NSError * error){
         if (granted == YES) {
-            NSArray *arrayOfAccounts = [account accountsWithAccountType:accountType];
+            NSArray *arrayOfAccounts = [_account accountsWithAccountType:_accountType];
             if([arrayOfAccounts count] > 0){
                 
                 ACAccount *twitterAccount = [arrayOfAccounts lastObject];
                 
-                NSURL *requestAPI = [NSURL URLWithString:@"https://api.twitter.com/1.1/statuses/user_timeline.json"];
+                NSURL *requestAPI = [NSURL URLWithString:@"https://api.twitter.com/1.1/statuses/home_timeline.json"];
                 
                 NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
                 
-                [parameters setObject:@"100" forKey:@"count"];
+                [parameters setObject:@"20" forKey:@"count"];
                 
                 [parameters setObject:@"1" forKey:@"include_entities"];
                 
+                [parameters setObject:@"499805035489144832" forKey:@"since_id"];
                 SLRequest *posts = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodGET URL:requestAPI parameters:parameters];
                 
                 posts.account = twitterAccount;
@@ -94,11 +104,15 @@
                     
                     self.array = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableLeaves error:&error];
                     
+                    NSLog(@"Timeline Response: %@\n", self.array);
                     if (self.array.count != 0) {
-                       
+                        if(self.tableView != nil){
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [self.tableView reloadData];
+                            
+                                [self.tableView reloadData];
+                            
                         });
+                        }
                         
                     }
                     
@@ -156,8 +170,25 @@
     }];
 }
 
+-(void) updateLoop{
+    
+    
+
+    
+
+
+}
+
 - (IBAction)updateButton:(id)sender {
-    [self twitterTimeline];
+    /*
+    [self performSelectorInBackground:@selector(updateLoop) withObject:nil];
+     */
+    NSTimer *timer = [NSTimer timerWithTimeInterval:1.0
+                                             target:self
+                                           selector:@selector(twitterTimeline)
+                                           userInfo:nil repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+    
 
 }
 
